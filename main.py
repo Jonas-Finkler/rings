@@ -23,11 +23,12 @@ def main():
 
 
     # Calculate ring lengths
-    ring_lengths = [len(r) // 2 for r in rings]
+    ring_lengths = [len(r) for r in rings]
 
     # Create the histogram
     plt.figure(figsize=(10, 6))
-    plt.hist(ring_lengths, bins=range(1, max(ring_lengths) + 2), align='left', 
+    bins = range(2, max(ring_lengths) + 2, 2)
+    plt.hist(ring_lengths, bins=bins, align='left', 
              color='skyblue', edgecolor='black', rwidth=0.8)
 
     # Customize the plot
@@ -36,7 +37,7 @@ def main():
     plt.ylabel('Frequency', fontsize=10)
 
     # Set x-ticks to show integer values
-    plt.xticks(range(min(ring_lengths), max(ring_lengths) + 1))
+    plt.xticks(bins[:-1])
 
     # Add grid for better readability
     plt.grid(axis='y', linestyle='--', alpha=0.7)
