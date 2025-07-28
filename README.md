@@ -15,7 +15,7 @@ The function should be straight forward to use and takes the following parameter
 - `repeat`: In small unit cells, rings might be detected which wrap around periodically. The cell is therefore repeated internally according to this parameter to avoid this. Warnings are given if period rings are detected. They will not be returned, but it indicates that a larger ring might have been missed. 
 
 ## Example code
-An example is given in `main.py`.
+In `main.py` a little example script is provided that shows how to compute the ring size distribution of a given structure.
 
 ```python
 from rings import find_rings
