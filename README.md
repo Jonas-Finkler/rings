@@ -1,9 +1,12 @@
 # Rings
-
+## Introduction
 This is a little Python script to find rings in atomistic structures.
 
 It is using the ring definition according to [Guttman, L. (1990). Ring structure of the crystalline and amorphous forms of silicon dioxide. Journal of Non-Crystalline Solids, 116(2), 145-147](https://doi.org/10.1016/0022-3093(90)90686-G).
+This means that rings are defined as the shortest path between two bonded atoms, excluding the direct bond.
 
+
+## How to use
 The function should be straight forward to use and takes the following parameters:
 
 - `ats`: ASE atoms object for which rings should be found.
@@ -11,7 +14,7 @@ The function should be straight forward to use and takes the following parameter
 - `bonds`: Can be used to only include selected bond types in the ring calculation.
 - `repeat`: In small unit cells, rings might be detected which wrap around periodically. The cell is therefore repeated internally according to this parameter to avoid this. Warnings are given if period rings are detected. They will not be returned, but it indicates that a larger ring might have been missed. 
 
-
+## Example code
 An example is given in `main.py`.
 
 ```python
@@ -36,6 +39,10 @@ for r in rings:
 # Save it to have a look at the rings
 write('rings.extxyz', rs)
 ```
+
+![Example of detected rings in an atomic structure](figures/rings.png)
+
+
 
 
 
