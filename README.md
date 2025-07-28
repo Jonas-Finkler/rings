@@ -25,7 +25,7 @@ from ase.io import read, write
 ats = read('test.extxyz')
 
 # Find the rings made up of P-O and Al-O bonds
-rings = find_rings(ats, radii_factor=1.3, bonds=[('P', 'O'), ('Al', 'O')], repeat=(2, 2, 2))
+rings = find_rings(ats, radii_factor=1.3, bonds=[('P', 'O'), ('Ca', 'O')], repeat=(1, 1, 1))
 print(f'Found {len(rings)} rings')
 
 # `rings` now contains a list of index lists, identifying the atoms participating in each ring

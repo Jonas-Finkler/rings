@@ -9,7 +9,7 @@ def main():
     ats = read('test.extxyz')
 
     # Find the rings
-    rings = find_rings(ats, radii_factor=1.3, bonds=[('P', 'O'), ('Al', 'O')], repeat=(2, 2, 2))
+    rings = find_rings(ats, radii_factor=1.3, bonds=[('P', 'O'), ('Ca', 'O')], repeat=(1, 1, 1))
     print(f'Found {len(rings)} rings')
 
     # Create a list of structures containing only the rings
