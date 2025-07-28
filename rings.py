@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.sparse import csr_array
+from scipy.sparse import csr_array, coo_matrix
 from scipy.sparse.csgraph import dijkstra
 from ase.neighborlist import NeighborList
 from ase.data import covalent_radii
@@ -12,14 +12,14 @@ def check_ring_is_periodic(ring, offsets):
     Check if the ring wraps around the period cell, i.e., is not a true ring.
     Args:
         ring (list(int)): Atom indices of the ring
-        offsets (list(np.ndarray)): Unit cell offsets for all atoms
+        offsets (dict(type(int, int)): Unit cell offsets for all atoms
     Returns:
         bool: True if the ring is periodic, False otherwise
     '''
     total_offset = np.zeros(3)
     for i in range(len(ring) - 1):
-        total_offset += offsets[ring[i], ring[i+1]]
-    total_offset += offsets[ring[-1], ring[0]]
+        total_offset += offsets[(ring[i], ring[i+1])]
+    total_offset += offsets[(ring[-1], ring[0])]
     return np.all(total_offset == 0)
 
 def find_rings(ats, radii_factor=1.3, repeat=(1, 1, 1), bonds=None):
@@ -48,28 +48,31 @@ def find_rings(ats, radii_factor=1.3, repeat=(1, 1, 1), bonds=None):
     nl.update(s)
 
     # pairwise distances
-    d = np.zeros((nat, nat))
+    # d = np.zeros((nat, nat))
+    d_idx = []
+    d_val = []
     # unit cell offsets for all atoms
-    all_offsets = np.zeros((nat, nat, 3), dtype=int)
+    all_offsets = {}
 
     for i in range(nat):
         indices, offsets = nl.get_neighbors(i)
         rs = pos[indices, :] + offsets @ lat - pos[i, :]
         ds = np.linalg.norm(rs, axis=1)
-        d[i, indices] = ds
-        d[indices, i] = ds
-        all_offsets[i, indices] = offsets
-        all_offsets[indices, i] = -offsets
+        # d[i, indices] = ds
+        # d[indices, i] = ds
+        for j, r, o in zip(indices, ds, offsets):
+            # Ignore bonds that are not included
+            if ((els[i], els[j]) in bonds or (els[j], els[i]) in bonds):
+                d_idx.append((i, j))
+                d_val.append(r)
+                d_idx.append((j, i))
+                d_val.append(r)
+                all_offsets[(i, j)] = o
+                all_offsets[(j, i)] = -o
 
-        # set all neighbors that are not allowed to 0 (will be removed later)
-        if bonds is not None:
-            for j in indices:
-                if not ((els[i], els[j]) in bonds or (els[j], els[i]) in bonds):
-                    d[i, j] = 0
-                    d[j, i] = 0
 
     # sparse matrix of bonds, removes zero entries
-    d = csr_array(d)
+    d = csr_array((d_val, np.array(d_idx, dtype=np.int32).T), shape=(nat, nat))
 
     # now find the rings 
     rings = {}
